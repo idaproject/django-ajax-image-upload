@@ -89,7 +89,7 @@
             dest    = el.querySelector('.file-dest').value,
             form    = new FormData(),
             headers = {'X-CSRFToken': getCookie('csrftoken')},
-            regex  = /jpg|jpeg|png|gif/i
+            regex  = /jpg|jpeg|png|gif|svg/i
 
         if( ! regex.test(file.type)){
             return alert('Incorrect image format. Allowed (jpg, gif, png).')

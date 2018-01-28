@@ -1,0 +1,95 @@
+/*!* DjangoMultiUploadJS *!*/
+
+.multi-upload {
+    position: relative;
+    width: calc(100% - 32px);
+    height: 200px;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+    margin: 16px;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-align-items: center;
+    align-items: center;
+    justify-content: center;
+    background-color: #d0dbe6;
+    border-radius: 12px;
+    transition: opacity .2s ease, box-shadow .2s ease;
+    will-change: opacity, box-shadow;
+}
+
+.multi-upload.active {
+    opacity: .7;
+    box-shadow: 0 0 4px 2px rgba(0, 0, 0, .02);
+}
+
+.multi-upload.active .multi-upload__progress {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(0, -52px);
+}
+
+.multi-upload.active .multi-upload__text {
+    transform: translate(0, 0);
+}
+
+.multi-upload.active.hover {
+    opacity: 1;
+    box-shadow: inset 0 2px 4px 2px rgba(0, 0, 0, .1);
+}
+
+.multi-upload.active.hover .multi-upload__text {
+    color: white;
+}
+
+.multi-upload.disabled {
+    background-color: #354052;
+    color: white;
+    box-shadow: 0 0 4px 2px rgba(0, 0, 0, .02);
+}
+
+.multi-upload.disabled .multi-upload__text {
+    transform: translate(0, 32px);
+}
+
+.multi-upload.disabled .multi-upload__progress {
+    opacity: 1;
+}
+
+.multi-upload__text {
+    font-family: 'Arial', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    pointer-events: none;
+    user-select: none;
+    transition: tranform .2s ease;
+}
+
+.multi-upload__progress {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-family: 'Arial', sans-serif;
+    font-weight: 900;
+    font-size: 42px;
+    transform: translate(-50%, -50%);
+    transition: opacity .2s ease;
+}
+
+.multi-upload__progress > div {
+    line-height: 1;
+}
+
+.multi-upload__progress > div:first-child {
+    color: #5f6f8f;
+}
+
+.multi-upload__progress > div:last-child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    overflow: hidden;
+}
