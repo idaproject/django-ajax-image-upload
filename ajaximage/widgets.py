@@ -48,6 +48,7 @@ class AjaxImageWidget(widgets.TextInput):
         file_url = default_storage.url(file_path) if value else ''
         file_name = os.path.basename(file_url)
         output = self.html.format(upload_url=upload_url,
+                                  file_url=file_url,
                                   file_name=file_name,
                                   file_path=file_path,
                                   element_id=element_id,
