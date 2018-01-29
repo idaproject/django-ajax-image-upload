@@ -25,10 +25,3 @@ class AbstractImage(SortableMixin, models.Model):
 
     def __str__(self):
         return str(self.order)
-
-
-if not settings.AJAXIMAGE_MODEL:
-    class Image(AbstractImage):
-        pass
-else:
-    Image = apps.get_model(settings.AJAXIMAGE_MODEL)

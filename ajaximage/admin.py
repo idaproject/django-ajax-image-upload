@@ -2,12 +2,12 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 
 from adminsortable.admin import SortableGenericTabularInline, NonSortableParentAdmin
 
-from .models import Image
-
 
 class ImageInline(SortableGenericTabularInline, GenericTabularInline):
-    model = Image
+    model = None
     extra = 0
+
+
 
 
 class AjaxImageUploadMixin(NonSortableParentAdmin):
