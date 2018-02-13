@@ -21,7 +21,7 @@ The full documentation is at https://django-ajax-image-upload.readthedocs.io.
 Quickstart
 ----------
 
-Install Django User Assets::
+Install Django Ajax Image Upload::
 
     pip install django-ajax-image-upload
 
@@ -31,11 +31,12 @@ Add it to your `INSTALLED_APPS`:
 
     INSTALLED_APPS = (
         ...
+        'adminsortable',
         'ajaximage',
         ...
     )
 
-Add Django User Assets's URL patterns:
+Add Django Ajax Image Upload's URL patterns:
 
 .. code-block:: python
 
@@ -47,6 +48,33 @@ Add Django User Assets's URL patterns:
         url(r'^', include(ajaximage_urls)),
         ...
     ]
+
+Define your Image model:
+.. code-block:: python
+    from ajaximage.models import AbstractImage
+
+
+    class MyImage(AbstractImage):
+        # define additional fields here
+
+        class Meta:
+            ...
+
+
+Define generic tabular inline
+.. code-block::python
+    from ajaximage.admin import ImageInline
+
+    from .models import MyImage
+
+
+    class MyImageInline(ImageInline):
+        models = MyImage
+
+Example usage of AjaxImageUploadMixin:
+.. code-block::python
+    models.py
+
 
 Features
 --------
@@ -66,11 +94,3 @@ Does the code actually work?
 
 Credits
 -------
-
-Tools used in rendering this package:
-
-*  Cookiecutter_
-*  `cookiecutter-djangopackage`_
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`cookiecutter-djangopackage`: https://github.com/pydanny/cookiecutter-djangopackage
