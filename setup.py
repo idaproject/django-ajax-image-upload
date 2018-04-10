@@ -66,7 +66,7 @@ setup(
         'ajaximage',
     ],
     include_package_data=True,
-    install_requires=['Django>=1.8', read_file('requirements.txt')],
+    install_requires=['Django', 'Pillow', 'django-adminsortable'],
     license="MIT",
     zip_safe=False,
     keywords='django-ajax-image-upload',
