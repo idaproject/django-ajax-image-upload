@@ -13,20 +13,6 @@ class ImageInline(SortableGenericTabularInline, GenericTabularInline):
 class AjaxImageUploadMixin(NonSortableParentAdmin):
     change_form_template = 'ajaximage/change_form.html'
     ajax_change_form_template_extends = 'adminsortable/change_form.html'
-    image_inline = ImageInline
-    inline_position = None
-
-    def add_image_inline(self):
-        if not isinstance(self.inline_position, int):
-            self.inline_position = len(self.inlines)
-        if not isinstance(self.inlines, list):
-            self.inlines = list(self.inlines)
-        self.inlines.insert(self.inline_position, self.image_inline)
-
-    def get_inline_instances(self, request, obj=None):
-        if self.image_inline not in self.inlines:
-            self.add_image_inline()
-        return super().get_inline_instances(request, obj)
 
     # noinspection PyProtectedMember
     def change_view(self, request, object_id, form_url='', extra_context=None):
