@@ -1,5 +1,5 @@
 =============================
-Django User Assets
+Django Ajax Image Upload
 =============================
 
 .. image:: https://badge.fury.io/py/django-ajax-image-upload.svg
