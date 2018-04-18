@@ -12,10 +12,7 @@
 
     var images;
 
-    var app_model = $block.data('app-model');
-    console.log(app_model);
-    var row_class = '.dynamic-' + app_model + '-content_type-object_id .file-link[href=""]';
-    console.log(row_class);
+    var row_class = '.' + $block.data('row-class') + ' .file-link[href=""]';
 
     function getCookie(name) {
       var cookieValue = null;

@@ -1,9 +1,9 @@
 {% extends ajax_change_form_template_extends %}
 
 {% block footer %}
-    <form action="/upload/images/0/0/0"
+    <form action="/upload/{{ upload_to }}/"
             method="post"
-            class="multi-upload active js-multi-upload" data-app-model="{{ app_model }}">
+            class="multi-upload active js-multi-upload" data-row-class="{{ row_class }}">
       {% csrf_token %}
         <input type="file" name="file" style="display: none;">
         <div class="multi-upload__progress js-multi-upload-progress">

@@ -1,4 +1,6 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.contrib.contenttypes.fields import ReverseGenericManyToOneDescriptor
+from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor
 
 from adminsortable.admin import SortableGenericTabularInline, NonSortableParentAdmin
 
@@ -12,14 +14,8 @@ class AjaxImageUploadMixin(NonSortableParentAdmin):
     change_form_template = 'ajaximage/change_form.html'
     ajax_change_form_template_extends = 'adminsortable/change_form.html'
     image_inline = ImageInline
+    upload_to = '/images/'
 
-    def get_inline_instances(self, request, obj=None):
-        if self.inlines is None:
-            self.inlines = [self.image_inline]
-        else:
-            self.inlines = list(self.inlines) + [self.image_inline]
-        return super().get_inline_instances(request, obj)
-    
     # noinspection PyProtectedMember
     def change_view(self, request, object_id, form_url='', extra_context=None):
 
@@ -29,9 +25,16 @@ class AjaxImageUploadMixin(NonSortableParentAdmin):
         extra_context.update({
             'ajax_change_form_template_extends': self.ajax_change_form_template_extends,
         })
+        images_field = getattr(self.model, self.images_field)
+        if isinstance(images_field, ReverseGenericManyToOneDescriptor):
+            app_label = images_field.rel.model._meta.app_label
+            model_name = images_field.rel.model.__name__.lower()
+            row_class = 'dynamic-{}-{}-content_type-object_id'.format(app_label, model_name)
+        elif isinstance(images_field, ReverseManyToOneDescriptor):
+            row_class = 'dynamic-{}'.format(self.images_field)
         extra_context.update({
-            'app_model': f'{self.image_inline.model._meta.app_label}-'
-                         f'{self.image_inline.model.__name__.lower()}',
+            'upload_to': self.upload_to.strip('/'),
+            'row_class': row_class,
         })
         return super().change_view(request, object_id, form_url='',
                                    extra_context=extra_context)
@@ -45,9 +48,16 @@ class AjaxImageUploadMixin(NonSortableParentAdmin):
         extra_context.update({
             'ajax_change_form_template_extends': self.ajax_change_form_template_extends,
         })
+        images_field = getattr(self.model, self.images_field)
+        if isinstance(images_field, ReverseGenericManyToOneDescriptor):
+            app_label = images_field.rel.model._meta.app_label
+            model_name = images_field.rel.model.__name__.lower()
+            row_class = 'dynamic-{}-{}-content_type-object_id'.format(app_label, model_name)
+        elif isinstance(images_field, ReverseManyToOneDescriptor):
+            row_class = 'dynamic-{}'.format(self.images_field)
         extra_context.update({
-            'app_model': f'{self.image_inline.model._meta.app_label}-'
-                         f'{self.image_inline.model.__name__.lower()}',
+            'upload_to': self.upload_to.strip('/'),
+            'row_class': row_class
         })
         return super().add_view(request, form_url='', extra_context=extra_context)
 
