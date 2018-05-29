@@ -1,6 +1,11 @@
+import posixpath
+import datetime
+
 from django.core.files.storage import default_storage
 from django.db.models.fields.files import FileDescriptor, FieldFile
 from django.db.models import Field
+from django.utils.encoding import force_str, force_text
+
 from .widgets import AjaxImageWidget
 
 
@@ -11,8 +16,8 @@ class AjaxImageField(Field):
     descriptor_class = FileDescriptor
 
     def __init__(self, *args, **kwargs):
-        upload_to = kwargs.pop('upload_to', '')
-        self.widget = AjaxImageWidget(upload_to=upload_to)
+        self.upload_to = kwargs.pop('upload_to', '')
+        self.widget = AjaxImageWidget(upload_to=self.upload_to)
         super(AjaxImageField, self).__init__(*args, **kwargs)
 
     # noinspection PyMethodOverriding
@@ -32,3 +37,11 @@ class AjaxImageField(Field):
         defaults = {'widget': self.widget}
         defaults.update(kwargs)
         return super(AjaxImageField, self).formfield(**defaults)
+
+    def generate_filename(self, instance, filename):
+        if callable(self.upload_to):
+            filename = self.upload_to(instance, filename)
+        else:
+            dirname = force_text(datetime.datetime.now().strftime(force_str(self.upload_to)))
+            filename = posixpath.join(dirname, filename)
+        return self.storage.generate_filename(filename)
