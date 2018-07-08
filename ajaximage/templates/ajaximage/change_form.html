@@ -1,7 +1,7 @@
 {% extends ajax_change_form_template_extends %}
 
 {% block footer %}
-    <form action="/upload/{{ upload_to }}/"
+    <form action="{{ upload_to }}/"
             method="post"
             class="multi-upload active js-multi-upload" data-row-class="{{ row_class }}">
       {% csrf_token %}
