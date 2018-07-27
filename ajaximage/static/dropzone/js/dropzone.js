@@ -12,7 +12,7 @@
 
     var images;
 
-    var row_class = '.' + $block.data('row-class') + ' .file-link[href=""]';
+    var row_class = '#' + $block.data('id') + ' .file-link[href=""]';
 
     function getCookie(name) {
       var cookieValue = null;
@@ -142,13 +142,13 @@
     function addImagesToList(data) {
       $('.add-row').find('a').trigger('click');
 
-      var row = $('.dynamic-image-image-content_type-object_id');
+      var link = $(document).find(row_class).eq(0);
 
-      var link = $(document).find(row_class);
       if (link.attr('href') === '') {
         link.attr('href', data.url);
         link.children('img').attr('src', data.url);
       }
+
 
       var input = link.siblings('input.file-path');
 
