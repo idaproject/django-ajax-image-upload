@@ -51,6 +51,7 @@ Add Django Ajax Image Upload's URL patterns:
 
 Define your Image model:
 .. code-block:: python
+
     from ajaximage.models import AbstractImage
 
 
@@ -63,6 +64,7 @@ Define your Image model:
 
 Define generic tabular inline
 .. code-block::python
+
     from ajaximage.admin import ImageInline
 
     from .models import MyImage
@@ -73,6 +75,7 @@ Define generic tabular inline
 
 Example usage of AjaxImageUploadMixin:
 .. code-block::python
+
     models.py
 
 
