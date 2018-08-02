@@ -3,8 +3,24 @@
 (function ($) {
     $(document).ready(function () {
 
-        var $blocks = jQuery('.js-multi-upload');
+        ajaxImageUploadData.forEach(function (item) {
+            var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+            var template =
+                '<div action="/upload/' + item.upload_to + '/"\n' +
+                '     class="multi-upload active js-multi-upload"\n' +
+                '     data-id="' + item.prefix + '-group">\n' +
+                '    <input type="hidden" name="csrfmiddlewaretoken" value="' + csrfToken + '">\n' +
+                '    <input type="file" name="file" style="display: none;">\n' +
+                '    <div class="multi-upload__progress js-multi-upload-progress">\n' +
+                '        <div></div>\n' +
+                '        <div></div>\n' +
+                '    </div>\n' +
+                '    <div class="multi-upload__text js-multi-upload-text">Перетащи изображения!</div>\n' +
+                '</div>';
+            $('#' + item.prefix + '-group').append(template);
+        });
 
+        var $blocks = jQuery('.js-multi-upload');
         $blocks.each(function () {
             var $block = $(this);
 
@@ -153,7 +169,6 @@
                     link.attr('href', data.url);
                     link.children('img').attr('src', data.url);
                 }
-
 
                 var input = link.siblings('input.file-path');
 

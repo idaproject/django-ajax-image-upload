@@ -1,7 +1,7 @@
 {% extends ajax_change_form_template_extends %}
 
-{% block inline_field_sets %}
-  {% for inline_admin_formset in inline_admin_formsets %}
-      {% include 'ajaximage/tabular.html' %}
-  {% endfor %}
+{% block extrahead %}{{ block.super }}
+<script>
+  var ajaxImageUploadData = {{ data|safe }};
+</script>
 {% endblock %}
