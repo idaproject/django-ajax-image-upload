@@ -2,6 +2,9 @@
 
 (function ($) {
     $(document).ready(function () {
+        if (typeof ajaxImageUploadData === 'undefined') {
+            return;
+        }
 
         ajaxImageUploadData.forEach(function (item) {
             var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
