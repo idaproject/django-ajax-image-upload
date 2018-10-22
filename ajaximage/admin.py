@@ -3,6 +3,7 @@ import json
 from django.contrib.contenttypes.admin import GenericTabularInline
 
 from adminsortable.admin import SortableGenericTabularInline, NonSortableParentAdmin
+from django.urls import reverse
 
 
 class ImageInline(SortableGenericTabularInline, GenericTabularInline):
@@ -31,6 +32,7 @@ class AjaxImageUploadMixin(NonSortableParentAdmin):
                         upload_to = field.upload_to(inline.model, '').strip('/')
                     else:
                         upload_to = field.upload_to
+                upload_to = reverse('ajaximage', kwargs={'upload_to': upload_to})
                 data.append({
                     'upload_to': upload_to,
                     'prefix': formset.prefix,

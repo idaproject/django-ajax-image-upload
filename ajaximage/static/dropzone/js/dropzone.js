@@ -9,7 +9,7 @@
         ajaxImageUploadData.forEach(function (item) {
             var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
             var template =
-                '<div action="/upload/' + item.upload_to + '/"\n' +
+                '<div action="' + item.upload_to + '/"\n' +
                 '     class="multi-upload active js-multi-upload"\n' +
                 '     data-id="' + item.prefix + '-group">\n' +
                 '    <input type="hidden" name="csrfmiddlewaretoken" value="' + csrfToken + '">\n' +
