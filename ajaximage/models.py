@@ -1,14 +1,11 @@
 from django.db import models
-from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.apps import apps
-from adminsortable.models import SortableMixin
 
 from .fields import AjaxImageField
 
 
 # noinspection PyAbstractClass
-class AbstractImage(SortableMixin, models.Model):
+class AbstractImage(models.Model):
     order = models.PositiveIntegerField('Порядок', default=0, editable=False, db_index=True)
     file = AjaxImageField('Файл', upload_to='ajaximage/image/file')
     description = models.TextField('Описание', blank=True)

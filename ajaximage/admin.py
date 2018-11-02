@@ -1,19 +1,19 @@
 import json
 
 from django.contrib.contenttypes.admin import GenericTabularInline
-
-from adminsortable.admin import SortableGenericTabularInline, NonSortableParentAdmin
+from django.contrib.admin import ModelAdmin
 from django.urls import reverse
 
 
-class ImageInline(SortableGenericTabularInline, GenericTabularInline):
+class ImageInline(GenericTabularInline):
     model = None
     extra = 0
 
 
-class AjaxImageUploadMixin(NonSortableParentAdmin):
+# noinspection PyProtectedMember
+class AjaxImageUploadMixin(ModelAdmin):
     change_form_template = 'ajaximage/change_form.html'
-    ajax_change_form_template_extends = 'adminsortable/change_form.html'
+    ajax_change_form_template_extends = 'admin/change_form.html'
     image_inline = ImageInline
     upload_to = '/images/'
 
@@ -22,7 +22,7 @@ class AjaxImageUploadMixin(NonSortableParentAdmin):
             extra_context = {}
         data = []
         obj = self.get_object(request, object_id)
-        formsets, inlines = self._create_formsets(request, obj,not obj is None)
+        formsets, inlines = self._create_formsets(request, obj, obj is not None)
         for inline, formset in zip(inlines, formsets):
             if hasattr(inline, 'ajax_image_upload_field'):
                 field = inline.model._meta.get_field(getattr(inline, 'ajax_image_upload_field'))
@@ -43,12 +43,10 @@ class AjaxImageUploadMixin(NonSortableParentAdmin):
         })
         return extra_context
 
-    # noinspection PyProtectedMember
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = self._get_context(request, object_id, extra_context=extra_context)
         return super().change_view(request, object_id, form_url='', extra_context=extra_context)
 
-    # noinspection PyProtectedMember
     def add_view(self, request, form_url='', extra_context=None):
         extra_context = self._get_context(request, None, extra_context=extra_context)
         return super().add_view(request, form_url='', extra_context=extra_context)
