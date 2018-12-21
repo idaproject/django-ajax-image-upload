@@ -14,7 +14,7 @@ class AjaxImageWidget(widgets.TextInput):
             <img class="file-img" src="{file_url}">
         </a>
         <a class="file-remove" href="#remove">Remove</a>
-        <input class="file-path" type="hidden" value="{file_path}" id="{element_id}" name="{name}" />
+        <input class="file-path" type="hidden" value="{file_path}" id="{element_id}" name="{name}"/>
         <input type="file" class="file-input" />
         <input class="file-dest" type="hidden" value="{upload_url}">
         <div class="progress progress-striped active">
@@ -42,7 +42,10 @@ class AjaxImageWidget(widgets.TextInput):
     def render(self, name, value, attrs=None, renderer=None):
         final_attrs = self.build_attrs(attrs)
         element_id = final_attrs.get('id')
-        kwargs = {'upload_to': self.upload_to}
+        upload_to = self.upload_to
+        if callable(self.upload_to):
+            upload_to = self.upload_to(None, '')
+        kwargs = {'upload_to': upload_to}
         upload_url = reverse('ajaximage', kwargs=kwargs)
         file_path = str(value) if value else ''
         file_url = default_storage.url(file_path) if value else ''
