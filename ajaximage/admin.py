@@ -53,6 +53,7 @@ class AjaxImageUploadMixin(ModelAdmin):
 
     class Media:
         js = (
+            'admin/js/jquery.init.js',
             'dropzone/js/dropzone.js',
         )
         css = {
