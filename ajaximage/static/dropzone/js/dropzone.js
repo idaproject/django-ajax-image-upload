@@ -9,7 +9,7 @@
         ajaxImageUploadData.forEach(function (item) {
             var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
             var template =
-                '<div action="' + item.upload_to + '/"\n' +
+                '<form action="' + item.upload_to + '/"\n' +
                 '     class="multi-upload active js-multi-upload"\n' +
                 '     data-id="' + item.prefix + '-group">\n' +
                 '    <input type="hidden" name="csrfmiddlewaretoken" value="' + csrfToken + '">\n' +
@@ -19,7 +19,7 @@
                 '        <div></div>\n' +
                 '    </div>\n' +
                 '    <div class="multi-upload__text js-multi-upload-text">Перетащи изображения!</div>\n' +
-                '</div>';
+                '</form>';
             $('#' + item.prefix + '-group').append(template);
         });
 
