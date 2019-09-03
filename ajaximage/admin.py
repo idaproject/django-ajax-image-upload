@@ -39,7 +39,7 @@ class AjaxImageUploadMixin(ModelAdmin):
     @staticmethod
     def _get_inline_upload_to(inline):
         url = getattr(inline, 'ajax_image_upload_url', None)
-        if url is not None:
+        if url is None:
             field = inline.model._meta.get_field(getattr(inline, 'ajax_image_upload_field'))
             upload_to = None
             if field:
