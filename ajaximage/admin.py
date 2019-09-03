@@ -25,14 +25,7 @@ class AjaxImageUploadMixin(ModelAdmin):
         formsets, inlines = self._create_formsets(request, obj, obj is not None)
         for inline, formset in zip(inlines, formsets):
             if hasattr(inline, 'ajax_image_upload_field'):
-                field = inline.model._meta.get_field(getattr(inline, 'ajax_image_upload_field'))
-                upload_to = None
-                if field:
-                    if callable(field.upload_to):
-                        upload_to = field.upload_to(inline.model, '').strip('/')
-                    else:
-                        upload_to = field.upload_to
-                upload_to = reverse('ajaximage', kwargs={'upload_to': upload_to})
+                upload_to = self._get_inline_upload_to(inline)
                 data.append({
                     'upload_to': upload_to,
                     'prefix': formset.prefix,
@@ -42,6 +35,20 @@ class AjaxImageUploadMixin(ModelAdmin):
             'data': json.dumps(data, ensure_ascii=False),
         })
         return extra_context
+
+    @staticmethod
+    def _get_inline_upload_to(inline):
+        url = getattr(inline, 'ajax_image_upload_url', None)
+        if url is not None:
+            field = inline.model._meta.get_field(getattr(inline, 'ajax_image_upload_field'))
+            upload_to = None
+            if field:
+                if callable(field.upload_to):
+                    upload_to = field.upload_to(inline.model, '').strip('/')
+                else:
+                    upload_to = field.upload_to
+            url = reverse('ajaximage', kwargs={'upload_to': upload_to})
+        return url
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = self._get_context(request, object_id, extra_context=extra_context)
