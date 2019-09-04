@@ -50,3 +50,4 @@ env
 *.sqlite3
 
 .pypirc
+media

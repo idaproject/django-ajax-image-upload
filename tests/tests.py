@@ -1,7 +1,8 @@
 import json
+import os
 
 from django.contrib.admin import ModelAdmin, TabularInline
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.admin.sites import AdminSite
 
@@ -27,23 +28,70 @@ class AjaxImageUploadMixinTest(TestCase):
         self.gallery = Gallery.objects.create(name='Test gallery')
         self.site = AdminSite()
 
-    def test_context_upload_to(self):
+    def test_ajaximage_url_parameter(self):
         class ImageInline(TabularInline):
             model = Image
             ajax_image_upload_field = 'file'
 
-        class CustomViewImageInline(TabularInline):
+        class ParameterImageInline(TabularInline):
             model = Image
             ajax_image_upload_field = 'file'
-            ajax_image_upload_url = '/different-url/'
+            ajax_image_max_width = 500
+            ajax_image_max_height = 500
+            ajax_image_crop = 1
+            ajax_image_storage_path = 'test.path'
 
         class GalleryAdmin(AjaxImageUploadMixin, ModelAdmin):
-            inlines = (ImageInline, CustomViewImageInline)
+            inlines = (ImageInline, ParameterImageInline)
 
         ma = GalleryAdmin(Gallery, self.site)
         data = json.loads(ma._get_context(request, self.gallery.pk, None)['data'])
-        upload_to_urls = [el['upload_to'] for el in data]
+        url = [el['ajaximage_url'] for el in data]
         self.assertEqual(
-            upload_to_urls,
-            [reverse('ajaximage', kwargs={'upload_to': 'test/folder'}), '/different-url/'],
+            url,
+            [
+                reverse(
+                    'ajaximage',
+                    kwargs={
+                        'upload_to': 'test/folder',
+                        'max_width': 0,
+                        'max_height': 0,
+                        'crop': 0,
+                        'storage': None,
+                    },
+                ),
+                reverse(
+                    'ajaximage',
+                    kwargs={
+                        'upload_to': 'test/folder',
+                        'max_width': 500,
+                        'max_height': 500,
+                        'crop': 1,
+                        'storage': 'test.path',
+                    },
+                ),
+            ],
         )
+
+
+class AjaximageViewTest(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+    def test_status(self):
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(base_path, 'test.jpg'), 'rb') as f:
+            response = self.client.post(
+                reverse(
+                    'ajaximage',
+                    kwargs={
+                        'upload_to': 'test/folder',
+                        'max_width': 300,
+                        'max_height': 300,
+                        'crop': 0,
+                        'storage': 'django.core.files.storage.FileSystemStorage',
+                    },
+                ),
+                {'file': f},
+            )
+            self.assertEqual(response.status_code, 200)
