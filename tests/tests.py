@@ -2,6 +2,8 @@ import json
 import os
 
 from django.contrib.admin import ModelAdmin, TabularInline
+from django.contrib.auth.models import User
+from django.template.response import TemplateResponse
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.admin.sites import AdminSite
@@ -27,6 +29,16 @@ class AjaxImageUploadMixinTest(TestCase):
     def setUp(self):
         self.gallery = Gallery.objects.create(name='Test gallery')
         self.site = AdminSite()
+        self.client = Client()
+        self.user = User.objects.create_superuser('test_user', '', '')
+
+    def test_change_view(self):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse('admin:tests_gallery_change', args=(self.gallery.pk,))
+        )
+        self.assertIsInstance(response, TemplateResponse)
+        self.assertEqual(response.status_code, 200)
 
     def test_ajaximage_url_parameter(self):
         class ImageInline(TabularInline):
@@ -57,7 +69,7 @@ class AjaxImageUploadMixinTest(TestCase):
                         'max_width': 0,
                         'max_height': 0,
                         'crop': 0,
-                        'storage': None,
+                        'storage': '',
                     },
                 ),
                 reverse(
@@ -90,6 +102,22 @@ class AjaximageViewTest(TestCase):
                         'max_height': 300,
                         'crop': 0,
                         'storage': 'django.core.files.storage.FileSystemStorage',
+                    },
+                ),
+                {'file': f},
+            )
+            self.assertEqual(response.status_code, 200)
+
+        with open(os.path.join(base_path, 'test.jpg'), 'rb') as f:
+            response = self.client.post(
+                reverse(
+                    'ajaximage',
+                    kwargs={
+                        'upload_to': 'test/folder',
+                        'max_width': 300,
+                        'max_height': 300,
+                        'crop': 0,
+                        'storage': '',
                     },
                 ),
                 {'file': f},

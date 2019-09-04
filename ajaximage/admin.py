@@ -54,7 +54,7 @@ class AjaxImageUploadMixin(ModelAdmin):
         assert isinstance(max_height, int), 'ajax_image_max_height must be an integer!'
         crop = getattr(inline, 'ajax_image_crop', 0)
         assert isinstance(crop, int), 'ajax_image_crop must be an integer!'
-        storage = getattr(inline, 'ajax_image_storage_path', None)
+        storage = getattr(inline, 'ajax_image_storage_path', '')
         return max_width, max_height, crop, storage
 
     @staticmethod

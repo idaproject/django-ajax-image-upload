@@ -3,7 +3,7 @@ import os
 from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django.urls import reverse
-from django.core.files.storage import default_storage
+from django.core.files.storage import get_storage_class
 
 
 class AjaxImageWidget(widgets.TextInput):
@@ -24,18 +24,16 @@ class AjaxImageWidget(widgets.TextInput):
     """
 
     class Media:
-        js = (
-            'ajaximage/js/ajaximage.js',
-        )
-        css = {
-            'all': (
-                'ajaximage/css/bootstrap-progress.min.css',
-                'ajaximage/css/styles.css',
-            )
-        }
+        js = ('ajaximage/js/ajaximage.js',)
+        css = {'all': ('ajaximage/css/bootstrap-progress.min.css', 'ajaximage/css/styles.css')}
 
     def __init__(self, *args, **kwargs):
         self.upload_to = kwargs.pop('upload_to', '')
+        self.max_width = kwargs.pop('max_width', 0)
+        self.max_height = kwargs.pop('max_height', 0)
+        self.crop = kwargs.pop('crop', 0)
+        self.storage_path = kwargs.pop('storage_path', None)
+
         super(AjaxImageWidget, self).__init__(*args, **kwargs)
 
     # noinspection PyMethodOverriding
@@ -45,16 +43,25 @@ class AjaxImageWidget(widgets.TextInput):
         upload_to = self.upload_to
         if callable(self.upload_to):
             upload_to = self.upload_to(None, '')
-        kwargs = {'upload_to': upload_to}
+        kwargs = {
+            'upload_to': upload_to,
+            'max_width': self.max_width,
+            'max_height': self.max_height,
+            'crop': self.crop,
+            'storage': self.storage_path if self.storage_path is not None else '',
+        }
         upload_url = reverse('ajaximage', kwargs=kwargs)
         file_path = str(value) if value else ''
-        file_url = default_storage.url(file_path) if value else ''
+        storage = get_storage_class(self.storage_path)
+        file_url = storage.url(file_path) if value else ''
         file_name = os.path.basename(file_url)
-        output = self.html.format(upload_url=upload_url,
-                                  file_url=file_url,
-                                  file_name=file_name,
-                                  file_path=file_path,
-                                  element_id=element_id,
-                                  name=name)
+        output = self.html.format(
+            upload_url=upload_url,
+            file_url=file_url,
+            file_name=file_name,
+            file_path=file_path,
+            element_id=element_id,
+            name=name,
+        )
 
         return mark_safe(output)

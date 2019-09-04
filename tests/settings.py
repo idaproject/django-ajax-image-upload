@@ -1,4 +1,5 @@
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'd0au$i5he(#ais5@-i@rv=963$a@4d2p2fmnc7(gyc2ecoi^_)'
@@ -55,8 +56,24 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
-
 AJAXIMAGE_DIR = 'ajaximage/'
 AJAXIMAGE_AUTH_TEST = lambda u: True
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'ajaximage/templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ]
+        },
+    }
+]
