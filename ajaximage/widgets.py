@@ -52,7 +52,7 @@ class AjaxImageWidget(widgets.TextInput):
         }
         upload_url = reverse('ajaximage', kwargs=kwargs)
         file_path = str(value) if value else ''
-        storage = get_storage_class(self.storage_path)
+        storage = get_storage_class(self.storage_path)()
         file_url = storage.url(file_path) if value else ''
         file_name = os.path.basename(file_url)
         output = self.html.format(

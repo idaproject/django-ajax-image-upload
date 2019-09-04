@@ -16,7 +16,7 @@ class AjaxImageField(Field):
     def __init__(self, *args, **kwargs):
         self.upload_to = kwargs.pop('upload_to', '')
         storage = kwargs.pop('storage_path', None)
-        self.storage = get_storage_class(storage)
+        self.storage = get_storage_class(storage)()
         max_width = kwargs.pop('max_width', 0)
         max_height = kwargs.pop('max_height', 0)
         crop = kwargs.pop('crop', 0)

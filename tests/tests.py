@@ -3,6 +3,7 @@ import os
 
 from django.contrib.admin import ModelAdmin, TabularInline
 from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
 from django.template.response import TemplateResponse
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -10,6 +11,8 @@ from django.contrib.admin.sites import AdminSite
 
 from .models import Gallery, Image
 from ajaximage.admin import AjaxImageUploadMixin
+from ajaximage.fields import AjaxImageField
+from ajaximage.widgets import AjaxImageWidget
 
 
 class MockRequest:
@@ -24,6 +27,8 @@ class MockSuperUser:
 request = MockRequest()
 request.user = MockSuperUser()
 
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
 
 class AjaxImageUploadMixinTest(TestCase):
     def setUp(self):
@@ -34,9 +39,7 @@ class AjaxImageUploadMixinTest(TestCase):
 
     def test_change_view(self):
         self.client.force_login(self.user)
-        response = self.client.get(
-            reverse('admin:tests_gallery_change', args=(self.gallery.pk,))
-        )
+        response = self.client.get(reverse('admin:tests_gallery_change', args=(self.gallery.pk,)))
         self.assertIsInstance(response, TemplateResponse)
         self.assertEqual(response.status_code, 200)
 
@@ -91,8 +94,7 @@ class AjaximageViewTest(TestCase):
         self.client = Client()
 
     def test_status(self):
-        base_path = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(base_path, 'test.jpg'), 'rb') as f:
+        with open(os.path.join(BASE_PATH, 'test.jpg'), 'rb') as f:
             response = self.client.post(
                 reverse(
                     'ajaximage',
@@ -108,7 +110,7 @@ class AjaximageViewTest(TestCase):
             )
             self.assertEqual(response.status_code, 200)
 
-        with open(os.path.join(base_path, 'test.jpg'), 'rb') as f:
+        with open(os.path.join(BASE_PATH, 'test.jpg'), 'rb') as f:
             response = self.client.post(
                 reverse(
                     'ajaximage',
@@ -123,3 +125,19 @@ class AjaximageViewTest(TestCase):
                 {'file': f},
             )
             self.assertEqual(response.status_code, 200)
+
+
+class AjaxImageFieldTest(TestCase):
+    def test_widget_render(self):
+        file_path = os.path.join(BASE_PATH, 'test.jpg')
+        file_url = default_storage.url(file_path)
+        field = AjaxImageField(upload_to='test', max_width=100, max_height=200)
+        html = field.widget.render(name='test', value=file_path, attrs={'id': 1})
+        correct_html = AjaxImageWidget.html.format(
+            file_path=file_path,
+            file_url=file_url,
+            element_id=1,
+            name='test',
+            upload_url='/ajaximage/upload/test/100/200/0//',
+        )
+        self.assertHTMLEqual(html, correct_html)
