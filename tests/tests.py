@@ -3,7 +3,6 @@ import os
 
 from django.contrib.admin import ModelAdmin, TabularInline
 from django.contrib.auth.models import User
-from django.core.files.storage import default_storage
 from django.template.response import TemplateResponse
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -22,6 +21,14 @@ class MockRequest:
 class MockSuperUser:
     def has_perm(self, perm):
         return True
+
+
+class MockStorage:
+    def save(self, name, file):
+        return 'test/path'
+
+    def url(self, path):
+        return 'test/url'
 
 
 request = MockRequest()
@@ -103,12 +110,13 @@ class AjaximageViewTest(TestCase):
                         'max_width': 300,
                         'max_height': 300,
                         'crop': 0,
-                        'storage': 'django.core.files.storage.FileSystemStorage',
+                        'storage': 'tests.tests.MockStorage',
                     },
                 ),
                 {'file': f},
             )
             self.assertEqual(response.status_code, 200)
+            self.assertJSONEqual(response.content, {'url': 'test/url', 'filename': 'test/path'})
 
         with open(os.path.join(BASE_PATH, 'test.jpg'), 'rb') as f:
             response = self.client.post(
@@ -129,15 +137,18 @@ class AjaximageViewTest(TestCase):
 
 class AjaxImageFieldTest(TestCase):
     def test_widget_render(self):
+        self.maxDiff = None
         file_path = os.path.join(BASE_PATH, 'test.jpg')
-        file_url = default_storage.url(file_path)
-        field = AjaxImageField(upload_to='test', max_width=100, max_height=200)
+        file_url = MockStorage().url(file_path)
+        field = AjaxImageField(
+            upload_to='test', max_width=100, max_height=200, storage_path='tests.tests.MockStorage'
+        )
         html = field.widget.render(name='test', value=file_path, attrs={'id': 1})
         correct_html = AjaxImageWidget.html.format(
             file_path=file_path,
             file_url=file_url,
             element_id=1,
             name='test',
-            upload_url='/ajaximage/upload/test/100/200/0//',
+            upload_url='/ajaximage/upload/test/100/200/0/tests.tests.MockStorage/',
         )
         self.assertHTMLEqual(html, correct_html)
