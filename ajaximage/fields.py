@@ -4,7 +4,7 @@ import datetime
 from django.core.files.storage import get_storage_class
 from django.db.models.fields.files import FileDescriptor, FieldFile
 from django.db.models import Field
-from django.utils.encoding import force_str, force_text
+from django.utils.encoding import force_str
 
 from .widgets import AjaxImageWidget
 
@@ -51,6 +51,6 @@ class AjaxImageField(Field):
         if callable(self.upload_to):
             filename = self.upload_to(instance, filename)
         else:
-            dirname = force_text(datetime.datetime.now().strftime(force_str(self.upload_to)))
+            dirname = force_str(datetime.datetime.now().strftime(force_str(self.upload_to)))
             filename = posixpath.join(dirname, filename)
         return self.storage.generate_filename(filename)
