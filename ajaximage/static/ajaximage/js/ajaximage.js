@@ -143,11 +143,21 @@
         ;[].forEach.call(document.querySelectorAll('.ajaximage'), addHandlers)
     })
 
-    document.addEventListener('DOMNodeInserted', function(e){
-        if(e.target.tagName) {
-            var el = e.target.querySelector('.ajaximage')
-            if(el) addHandlers(el)
+    const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        const el = node.querySelector('.ajaximage');
+                        if (el) addHandlers(el);
+                    }
+                });
+            }
         }
-    })
-
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 })()
