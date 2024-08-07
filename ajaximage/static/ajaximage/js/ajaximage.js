@@ -155,9 +155,15 @@
             }
         }
     });
+
+    const observableContainer = document.documentElement || document.body;
     
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+    try {
+        observer.observe(observableContainer, {
+            childList: true,
+            subtree: true
+        });
+    } catch(e) {
+        console.warn('Error with handling mutation observer with message: ' + e);
+    }
 })()
